@@ -18,7 +18,7 @@ router.post('/add', async (req, res) => {
     const userData = req.body;
 
     try {
-        const user = await new User(userData);
+        const user = new User(userData);
         await user.save();
     } catch (err) {
         if (err.code === 11000) {
