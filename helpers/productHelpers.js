@@ -3,7 +3,7 @@ const Product = require("../models/productsModel")
 module.exports = {
     getOneProductByName: (name) => {
         return new Promise((resolve, reject) => {
-            Product.findOne({name})
+            Product.findOne({ name })
                 .then((product) => {
                     resolve(product)
                 })
@@ -14,6 +14,14 @@ module.exports = {
     },
     createOneProduct: (product) => {
         return new Promise((resolve, reject) => {
+            const today = new Date().toISOString().substring(0, 10)
+            product.prevPrice = [
+                {
+                    date: today,
+                    price: parseInt(product.price),
+                    startPrice: true
+                }
+            ]
             const newProduct = new Product(product);
             try {
                 newProduct.save()
@@ -52,6 +60,35 @@ module.exports = {
             } catch (err) {
                 reject(err)
             }
+        })
+    },
+    editOneProduct: ({ id, ...data }) => {
+        return new Promise((resolve, reject) => {
+            Product.findById(id)
+                .then(async (product) => {
+                    const today = new Date().toISOString().substring(0, 10)
+                    if (data.price && data.price != product.price) {
+                        await Product.findByIdAndUpdate(id, {
+                            prevPrice: [
+                                ...product.prevPrice,
+                                {
+                                    date: today,
+                                    price: product.price
+                                }
+                            ]
+                        })
+                    }
+                    Product.findByIdAndUpdate(id, data)
+                            .then(() => {
+                                resolve()
+                            })
+                            .catch((err) => {
+                                reject(err)
+                            })
+                })
+                .catch((err) => {
+                    reject(err)
+                })
         })
     }
 }

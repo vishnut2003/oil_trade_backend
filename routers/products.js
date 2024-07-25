@@ -39,4 +39,27 @@ router.get('/delete/:id', (req, res) => {
         })
 })
 
+router.post('/edit-single', (req, res) => {
+    productHelpers.editOneProduct(req.body)
+        .then(() => {
+            res.status(200).send('Product Updated Successfully!')
+        })
+        .catch((err) => {
+            res.status(400).send(err)
+        })
+})
+
+router.get('/date-filter/:date', async (req, res) => {
+    const date = new Date(req.params.date)
+    const today = new Date()
+    if(date.toISOString().substring(0, 10) === today.toISOString().substring(0, 10)) {
+        await productHelpers.getAllProducts()
+            .then((products) => {
+                return res.status(200).send(products)
+            })
+    } else {
+        productHelpers.getAllProductsByDate(date)
+    }   
+})
+
 module.exports = router
