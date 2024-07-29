@@ -15,9 +15,10 @@ module.exports = {
     createOneProduct: (product) => {
         return new Promise((resolve, reject) => {
             const today = new Date().toISOString().substring(0, 10)
+            const time = new Date().toLocaleTimeString().split(' ').join('_')
             product.prevPrice = [
                 {
-                    date: today,
+                    date: today + ' ' + time,
                     price: parseInt(product.price),
                     startPrice: true
                 }
@@ -67,12 +68,13 @@ module.exports = {
             Product.findById(id)
                 .then(async (product) => {
                     const today = new Date().toISOString().substring(0, 10)
+                    const time = new Date().toLocaleTimeString().split(' ').join('_')
                     if (data.price && data.price != product.price) {
                         await Product.findByIdAndUpdate(id, {
                             prevPrice: [
                                 ...product.prevPrice,
                                 {
-                                    date: today,
+                                    date: today + ' ' + time,
                                     price: product.price
                                 }
                             ]
