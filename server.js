@@ -9,16 +9,18 @@ require('dotenv').config();
 // Routers
 const userRouter = require('./routers/users');
 const productRouter = require('./routers/products');
+const purchaseRouter = require('./routers/purchase');
 
 const PORT = process.env.PORT || 3500;
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(morgan('common'))
+app.use(morgan('common'));
 
 app.use('/users', userRouter);
 app.use('/products', productRouter);
+app.use('/purchase', purchaseRouter);
 
 // Database
 connectDB((res) => {
