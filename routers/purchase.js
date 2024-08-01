@@ -2,6 +2,18 @@ const purchaseHelpers = require('../helpers/purchaseHelpers')
 
 const router = require('express').Router()
 
+router.post('/create-purchase', (req, res) => {
+    const purchaseEntry = req.body
+
+    // set bargainDate in Date type
+    const bargainDate = new Date(purchaseEntry.bargainDate);
+    purchaseEntry.bargainDate = bargainDate
+
+    // set location to id only
+    purchaseEntry.location = purchaseEntry.location._id
+    console.log(purchaseEntry);
+})
+
 router.post('/location/create', (req, res) => {
     purchaseHelpers.createLocation(req.body)
         .then(() => {
