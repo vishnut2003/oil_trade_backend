@@ -15,10 +15,15 @@ const purchaseSchema = new Schema({
         required: true
     },
     location: {
-        type: Object,
+        type: String,
         required: true
+    },
+    status: {
+        type: String,
+        required: true,
+        default: 'pending'
     }
-})
+}, {timestamps: true})
 
 const PurchaseModel = mongoose.model('Purchase', purchaseSchema);
 module.exports = PurchaseModel;

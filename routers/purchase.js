@@ -11,7 +11,31 @@ router.post('/create-purchase', (req, res) => {
 
     // set location to id only
     purchaseEntry.location = purchaseEntry.location._id
-    console.log(purchaseEntry);
+
+    // convert qty, price, w in MT to numbers
+    purchaseEntry.products.map((product, index) => {
+        purchaseEntry.products[index].qty = parseInt(product.qty)
+        purchaseEntry.products[index].price = parseInt(product.price)
+        purchaseEntry.products[index].weightInMT = parseInt(product.weightInMT)
+    })
+
+    purchaseHelpers.createPurchase(purchaseEntry)
+        .then((resopnse) => {
+            res.status(200).send(resopnse)
+        })
+        .catch((err) => {
+            res.status(400).send(err)
+        })
+})
+
+router.get('/get-all', (req, res) => {
+    purchaseHelpers.getAllPurchase()
+        .then((purchases) => {
+            res.status(200).send(purchases);
+        })
+        .catch((err) => {
+            res.status(500).send(err)
+        })
 })
 
 router.post('/location/create', (req, res) => {
@@ -31,6 +55,16 @@ router.get('/location/get-all', (req, res) => {
         })
         .catch((err) => {
             res.status(500).send(err)
+        })
+})
+
+router.post('/location/delete-one', (req, res) => {
+    purchaseHelpers.deleteOneLocation(req.body.locationId)
+        .then(() => {
+            res.status(200).send('Location Deleted')
+        })
+        .catch((err) => {
+            res.status(500).send(err);
         })
 })
 
