@@ -60,5 +60,39 @@ module.exports = {
                     reject(err)
                 })
         })
-    }
+    },
+    editOneLocation: ({id, ...updatedLocation}) => {
+        return new Promise((resolve, reject) => {
+            PurchaseLocation.findByIdAndUpdate(id, updatedLocation)
+                .then((res) => {
+                    resolve()
+                })
+                .catch((err) => {
+                    reject(err)
+                })
+        })
+    },
+    getOneLocation: (id) => {
+        return new Promise((resolve, reject) => {
+            PurchaseLocation.findById(id)
+                .then((location) => {
+                    console.log(location)
+                    resolve(location)
+                })
+                .catch((err) => {
+                    reject(err)
+                })
+        })
+    },
+    deleteOnePurchase: (id) => {
+        return new Promise((resolve, reject) => {
+            PurchaseModel.findByIdAndDelete(id)
+                .then((res) => {
+                    resolve()
+                })
+                .catch((err) => {
+                    reject(err)
+                })
+        })
+    } 
 }

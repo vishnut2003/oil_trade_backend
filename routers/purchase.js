@@ -38,6 +38,16 @@ router.get('/get-all', (req, res) => {
         })
 })
 
+router.post('/delete-one', (req, res) => {
+    purchaseHelpers.deleteOnePurchase(req.body.purchaseId)
+        .then(() => {
+            res.status(200).send('purchase deleted!');
+        })
+        .catch((err) => {
+            res.status(500).send(err)
+        })
+})
+
 router.post('/location/create', (req, res) => {
     purchaseHelpers.createLocation(req.body)
         .then(() => {
@@ -58,10 +68,30 @@ router.get('/location/get-all', (req, res) => {
         })
 })
 
+router.post('/location/get-one', (req, res) => {
+    purchaseHelpers.getOneLocation(req.body.locationId)
+        .then((location) => {
+            res.status(200).send(location);
+        })
+        .catch((err) => {
+            res.status(500).send(err)
+        })
+})
+
 router.post('/location/delete-one', (req, res) => {
     purchaseHelpers.deleteOneLocation(req.body.locationId)
         .then(() => {
             res.status(200).send('Location Deleted')
+        })
+        .catch((err) => {
+            res.status(500).send(err);
+        })
+})
+
+router.post('/location/edit', (req, res) => {
+    purchaseHelpers.editOneLocation(req.body)
+        .then(() => {
+            res.status(200).send('Changes saved!');
         })
         .catch((err) => {
             res.status(500).send(err);
