@@ -22,8 +22,11 @@ const purchaseSchema = new Schema({
         type: String,
         required: true,
         default: 'pending'
+    },
+    productPurchased: {
+        type: Array
     }
 }, {timestamps: true})
 
-const PurchaseModel = mongoose.model('Purchase', purchaseSchema);
-module.exports = PurchaseModel;
+const BargainPurchaseModel = mongoose.model('BargainPurchase', purchaseSchema);
+module.exports = BargainPurchaseModel;

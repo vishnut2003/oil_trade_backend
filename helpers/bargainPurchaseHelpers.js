@@ -1,5 +1,5 @@
 const PurchaseLocation = require("../models/purchaseLocationModel")
-const PurchaseModel = require("../models/purchaseModel")
+const BargainPurchaseModel = require("../models/BargainPurchaseModel")
 
 module.exports = {
     createLocation: ({ address, location }) => {
@@ -26,10 +26,18 @@ module.exports = {
     },
     createPurchase: (purchaseEntry) => {
         return new Promise((resolve, reject) => {
-            PurchaseModel.findOne({bargainNo: purchaseEntry.bargainNo})
+            BargainPurchaseModel.findOne({bargainNo: purchaseEntry.bargainNo})
                 .then( async (purchaseExist) => {
                     if(purchaseExist) return reject('Bargain number already exist!');
-                    const purchase = new PurchaseModel(purchaseEntry);
+
+                    // make productPurchased Array
+                    let purchasedProduct = purchaseEntry.products.filter((product) => {
+                        return {name: product.name, productId: product._id, qty: 0}
+                    })
+
+                    purchaseEntry.productPurchased = purchasedProduct;              
+
+                    const purchase = new BargainPurchaseModel(purchaseEntry);
                     try {
                         await purchase.save()
                         resolve(`Purchase created with Bargain No. ${purchaseEntry.bargainNo}`);
@@ -41,7 +49,7 @@ module.exports = {
     },
     getAllPurchase: () => {
         return new Promise((resolve, reject) => {
-            PurchaseModel.find()
+            BargainPurchaseModel.find()
                 .then((purchases) => {
                     resolve(purchases);
                 })
@@ -76,7 +84,6 @@ module.exports = {
         return new Promise((resolve, reject) => {
             PurchaseLocation.findById(id)
                 .then((location) => {
-                    console.log(location)
                     resolve(location)
                 })
                 .catch((err) => {
@@ -86,7 +93,7 @@ module.exports = {
     },
     deleteOnePurchase: (id) => {
         return new Promise((resolve, reject) => {
-            PurchaseModel.findByIdAndDelete(id)
+            BargainPurchaseModel.findByIdAndDelete(id)
                 .then((res) => {
                     resolve()
                 })

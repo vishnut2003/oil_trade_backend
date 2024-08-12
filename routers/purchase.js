@@ -1,4 +1,4 @@
-const purchaseHelpers = require('../helpers/purchaseHelpers')
+const purchaseHelpers = require('../helpers/bargainPurchaseHelpers')
 
 const router = require('express').Router()
 
