@@ -1,4 +1,5 @@
-const purchaseHelpers = require('../helpers/bargainPurchaseHelpers')
+const purchaseHelpers = require('../helpers/bargainPurchaseHelpers');
+const purchaseInvoiceHelpers = require('../helpers/purchaseInvoiceHelpers');
 
 const router = require('express').Router()
 
@@ -95,6 +96,38 @@ router.post('/location/edit', (req, res) => {
         })
         .catch((err) => {
             res.status(500).send(err);
+        })
+})
+
+// Purchase Invoice Start
+router.post('/purchase-invoice/create', (req, res) => {
+    const {_id, qtyPurchased} = req.body;
+    purchaseInvoiceHelpers.createPurchaseInvoice(_id, qtyPurchased)
+        .then(() => {
+            res.status(200).send('Purchase Invoice Created!');
+        })
+        .catch((err) => {
+            res.status(400).send(err);
+        })
+})
+
+router.get('/purchase-invoice/get-all', (req, res) => {
+    purchaseInvoiceHelpers.getAllPurchaseInvoice()
+        .then((invoices) => {
+            res.status(200).send(invoices);
+        })
+        .catch((err) => {
+            res.status(400).send(err);
+        })
+})
+
+router.post('/purchase-invoice/delete-one', (req, res) => {
+    purchaseInvoiceHelpers.deleteOnePurchaseInvoice(req.body.purchaseInvoiceId)
+        .then(() => {
+            res.status(200).send('Purchase Deleted!');
+        })
+        .catch((err) => {
+            res.status(400).send(err);
         })
 })
 
