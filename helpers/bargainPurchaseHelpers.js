@@ -31,13 +31,15 @@ module.exports = {
                     if(purchaseExist) return reject('Bargain number already exist!');
 
                     // make productPurchased Array
-                    let purchasedProduct = purchaseEntry.products.filter((product) => {
+                    let purchasedProduct = purchaseEntry.products.map((product) => {
                         return {name: product.name, productId: product._id, qty: 0}
                     })
+                    const newPurchaseEntry = {
+                        ...purchaseEntry,
+                        productPurchased: purchasedProduct
+                    }
 
-                    purchaseEntry.productPurchased = purchasedProduct;              
-
-                    const purchase = new BargainPurchaseModel(purchaseEntry);
+                    const purchase = new BargainPurchaseModel(newPurchaseEntry);
                     try {
                         await purchase.save()
                         resolve(`Purchase created with Bargain No. ${purchaseEntry.bargainNo}`);
