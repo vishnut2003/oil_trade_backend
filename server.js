@@ -10,6 +10,8 @@ require('dotenv').config();
 const userRouter = require('./routers/users');
 const productRouter = require('./routers/products');
 const purchaseRouter = require('./routers/purchase');
+const clientsRouter = require('./routers/clients');
+const salesRouter = require('./routers/sales');
 
 const PORT = process.env.PORT || 3500;
 
@@ -21,6 +23,8 @@ app.use(morgan('common'));
 app.use('/users', userRouter);
 app.use('/products', productRouter);
 app.use('/purchase', purchaseRouter);
+app.use('/clients', clientsRouter);
+app.use('/sales', salesRouter);
 
 // Database
 connectDB((res) => {
