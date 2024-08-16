@@ -16,6 +16,10 @@ const productSchema = new Schema({
     qty: {
         type: Number,
         default: 0
+    },
+    vQty: {
+        type: Number,
+        default: 0,
     }
 }, { timestamps: true })
 

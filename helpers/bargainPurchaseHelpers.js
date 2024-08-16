@@ -1,5 +1,6 @@
 const PurchaseLocation = require("../models/purchaseLocationModel")
 const BargainPurchaseModel = require("../models/BargainPurchaseModel")
+const Product = require("../models/productsModel")
 
 module.exports = {
     createLocation: ({ address, location }) => {
@@ -38,6 +39,15 @@ module.exports = {
                         ...purchaseEntry,
                         productPurchased: purchasedProduct
                     }
+
+                    // add to virtual qty
+                    newPurchaseEntry.products.map((product) => {
+                        Product.findByIdAndUpdate(product._id, {vQty: product.qty})
+                            .then(() => {
+                                return;
+                            })
+                            .catch((err) => console.log(err))
+                    })
 
                     const purchase = new BargainPurchaseModel(newPurchaseEntry);
                     try {

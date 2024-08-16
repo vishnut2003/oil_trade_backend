@@ -44,11 +44,6 @@ module.exports = {
                         })
                         if(statusComplete) purchaseBargain.status = 'complete';
                         else purchaseBargain.status = 'partial';
-                        
-                        // console.log(purchaseBargain.products)
-                        // console.log('Next')
-                        // console.log(purchaseBargain.productPurchased)
-                        // console.log(purchaseBargain.status)
 
                         if(hasErr) {
                             return
@@ -62,11 +57,11 @@ module.exports = {
                             console.log(err)
                         }
 
-                        // Add Product qty to stock
+                        // Add Product qty to stock and minus from virtual qty
                         purchasedProduct.map( async (product) => {
                             await Product.findById(product.productId)
-                                .then( async ({qty}) => {
-                                    await Product.findByIdAndUpdate(product.productId, {qty: qty + parseInt(product.purchaseQty)})
+                                .then( async ({qty, vQty}) => {
+                                    await Product.findByIdAndUpdate(product.productId, {qty: qty + parseInt(product.purchaseQty), vQty: vQty - parseInt(product.purchaseQty)})
                                 })
                         })
 
