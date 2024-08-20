@@ -42,4 +42,14 @@ router.post('/location/delete-one', (req, res) => {
         })
 })
 
+router.post('/bargain/create', (req, res) => {
+    bargainSalesHelpers.createBargainSales(req.body)
+        .then(() => {
+            console.log('response')
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+})
+
 module.exports = router;

@@ -1,3 +1,4 @@
+const OverflowStocksModel = require("../models/overflowStocksModel")
 const Product = require("../models/productsModel")
 
 module.exports = {
@@ -53,7 +54,15 @@ module.exports = {
             try {
                 Product.findByIdAndDelete(id)
                     .then((res) => {
-                        resolve()
+
+                        // Delete from overflow stocks also
+                        OverflowStocksModel.deleteOne({productId: id})
+                            .then(() => {
+                                resolve()
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                            })
                     })
                     .catch((err) => {
                         reject(err)
