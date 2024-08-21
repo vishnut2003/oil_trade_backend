@@ -37,9 +37,14 @@ const bargainSalesSchema = new Schema({
     validity: {
         type: Date,
         required: true
+    },
+    status: {
+        type: String,
+        required: true,
+        default: 'pending'
     }
 }, {timestamps: true});
 
-const BargainSalesModel = mongoose.model('BargainSalesModel', bargainSalesSchema);
+const BargainSalesModel = mongoose.model('BargainSales', bargainSalesSchema);
 
 module.exports = BargainSalesModel;

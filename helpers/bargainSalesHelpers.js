@@ -43,7 +43,7 @@ module.exports = {
                 })
         })
     },
-    deleteOneLocation: ({locationId}) => {
+    deleteOneLocation: ({ locationId }) => {
         return new Promise((resolve, reject) => {
             SalesLocationModel.findByIdAndDelete(locationId)
                 .then(() => {
@@ -59,9 +59,9 @@ module.exports = {
 
             let bargainNoExist = false;
 
-            await BargainSalesModel.findOne({bargainNo: newEntry.bargainNo})
+            await BargainSalesModel.findOne({ bargainNo: newEntry.bargainNo })
                 .then(async (existBargain) => {
-                    if(existBargain) {
+                    if (existBargain) {
                         bargainNoExist = true;
                         return;
                     } else {
@@ -74,26 +74,56 @@ module.exports = {
                     }
                 })
 
-            if(bargainNoExist) return reject('Bargain No. Already exist');
+            if (bargainNoExist) return reject('Bargain No. Already exist');
 
             // Check product availibility and if no stock add to Overflow Stock
-            newEntry.products.map(async(product, index) => {
+            newEntry.products.map(async (product, index) => {
                 await Product.findById(product._id)
                     .then(async (existProduct) => {
 
-                        if((existProduct.qty - existProduct.vSoldQty) < product.qty) {
-                            const diff = (product.qty - existProduct.vSoldQty) - existProduct.qty;
-                            await overflowStocksHelpers.addToOverQty(product._id, diff)
-                            
-                            if(index === newEntry.products.length - 1) {
-                                await Product.findByIdAndUpdate(product._id, {vSoldQty: existProduct.vSoldQty + product.qty})
-                                resolve()
-                            }
+                        await Product.findByIdAndUpdate(product._id, { vSoldQty: parseInt(existProduct.vSoldQty) + parseInt(product.qty) })
+                        const oversoldProduct = await Product.findById(product._id);
+                        await overflowStocksHelpers.addToOverQty(oversoldProduct.qty, oversoldProduct.vSoldQty, oversoldProduct._id);
+
+                        if (index === newEntry.products.length - 1) {
+                            resolve(newEntry.bargainNo);
                         }
-                        
+
                     })
             })
 
+        })
+    },
+    getAllBargainSales: () => {
+        return new Promise((resolve, reject) => {
+            BargainSalesModel.find({}).then((bargains) => {
+                resolve(bargains);
+            })
+            .catch((err) => {
+                reject(err);
+            })
+        })
+    },
+    getOneBargain: (bargainId) => {
+        return new Promise((resolve, reject) => {
+            BargainSalesModel.findById(bargainId)
+                .then((salesBargain) => {
+                    resolve(salesBargain);
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+        })
+    },
+    deleteOneBargain: (bargainId) => {
+        return new Promise((resolve, reject) => {
+            BargainSalesModel.findByIdAndDelete(bargainId)
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                })
         })
     }
 }

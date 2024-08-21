@@ -1,33 +1,33 @@
 const OverflowStocksModel = require("../models/overflowStocksModel")
 
 module.exports = {
-    addToOverQty: (productId, diffQty) => {
+    addToOverQty: (stock, vSoldStock, productId) => {
         return new Promise(async (resolve, reject) => {
-            await OverflowStocksModel.findOne({productId}).then(async(existStock) => {
-                if(existStock) {
-                    existStock.overflowQty += diffQty
-                    try {
-                        await existStock.save();
+            const diff = stock < vSoldStock ? vSoldStock - stock : 0;
+            OverflowStocksModel.findOne({productId})
+                .then(async (overflowStock) => {
+                    if(overflowStock) {
+                        overflowStock.overflowQty = diff;
+                        try{
+                            await overflowStock.save();
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    } else {
+                        const newOverflowStock = new OverflowStocksModel({
+                            productId: productId,
+                            overflowQty: diff
+                        });
                         
-                    } catch (err) {
-                        return console.log(err);
+                        try {
+                            await newOverflowStock.save();
+                        } catch (err) {
+                            console.log(err);
+                        }
                     }
 
                     resolve();
-                } else {
-                    const newOverflowStockEntry = new OverflowStocksModel({
-                        productId: productId,
-                        overflowQty: diffQty
-                    })
-                    try {
-                        await newOverflowStockEntry.save();
-                    } catch (err) {
-                        return console.log(err);
-                    }
-
-                    resolve();
-                }
-            })
+                })
         })
     }
 }
