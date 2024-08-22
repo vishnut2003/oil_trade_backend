@@ -25,6 +25,16 @@ const purchaseSchema = new Schema({
     },
     productPurchased: {
         type: Array
+    },
+    remarks: {
+        type: String,
+        default: 'No Remarks'
+    },
+    oldBargain: {
+        type: Object,
+        default: {
+            nothing: true
+        }
     }
 }, {timestamps: true})
 

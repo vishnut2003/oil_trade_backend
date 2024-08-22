@@ -12,6 +12,7 @@ const productRouter = require('./routers/products');
 const purchaseRouter = require('./routers/purchase');
 const clientsRouter = require('./routers/clients');
 const salesRouter = require('./routers/sales');
+const bargainTransferRouter = require('./routers/bargainTransfer');
 
 const PORT = process.env.PORT || 3500;
 
@@ -25,6 +26,7 @@ app.use('/products', productRouter);
 app.use('/purchase', purchaseRouter);
 app.use('/clients', clientsRouter);
 app.use('/sales', salesRouter);
+app.use('/bargain-transfer', bargainTransferRouter);
 
 // Database
 connectDB((res) => {
