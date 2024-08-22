@@ -42,11 +42,14 @@ module.exports = {
 
                     // add to virtual qty
                     newPurchaseEntry.products.map((product) => {
-                        Product.findByIdAndUpdate(product._id, {vQty: product.qty})
-                            .then(() => {
-                                return;
-                            })
-                            .catch((err) => console.log(err))
+                        Product.findById(product._id).then((existProduct) => {
+                            existProduct.vQty += product.qty;
+                            try {
+                                existProduct.save();
+                            } catch (err) {
+                                console.log(err);
+                            }
+                        })
                     })
 
                     const purchase = new BargainPurchaseModel(newPurchaseEntry);
