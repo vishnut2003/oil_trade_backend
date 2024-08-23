@@ -65,6 +65,10 @@ module.exports = {
                         bargainNoExist = true;
                         return;
                     } else {
+                        const parseAllToInt = newEntry.products.map((product, index) => {
+                            newEntry.products[index].qty = parseInt(product.qty)
+                        })
+                        await Promise.all(parseAllToInt);
                         const bargainNewEntry = new BargainSalesModel(newEntry)
                         try {
                             await bargainNewEntry.save();
@@ -99,9 +103,9 @@ module.exports = {
             BargainSalesModel.find({}).then((bargains) => {
                 resolve(bargains);
             })
-            .catch((err) => {
-                reject(err);
-            })
+                .catch((err) => {
+                    reject(err);
+                })
         })
     },
     getOneBargain: (bargainId) => {
@@ -117,6 +121,12 @@ module.exports = {
     },
     deleteOneBargain: (bargainId) => {
         return new Promise((resolve, reject) => {
+
+            // Miun from vSoldQty
+
+
+            // refresh overflow stock
+
             BargainSalesModel.findByIdAndDelete(bargainId)
                 .then(() => {
                     resolve();

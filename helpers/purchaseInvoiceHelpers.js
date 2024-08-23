@@ -1,4 +1,5 @@
 const BargainPurchaseModel = require('../models/BargainPurchaseModel');
+const OverflowStocksModel = require('../models/overflowStocksModel');
 const Product = require('../models/productsModel');
 const PurchaseInvoiceModel = require('../models/PurchaseInvoiceModel');
 
@@ -58,12 +59,34 @@ module.exports = {
                         }
 
                         // Add Product qty to stock and minus from virtual qty
-                        purchasedProduct.map( async (product) => {
+                        const updateProduct = purchasedProduct.map( async (product) => {
                             await Product.findById(product.productId)
                                 .then( async ({qty, vQty}) => {
                                     await Product.findByIdAndUpdate(product.productId, {qty: qty + parseInt(product.purchaseQty), vQty: vQty - parseInt(product.purchaseQty)})
                                 })
                         })
+                        await Promise.all(updateProduct);
+
+                        // make changes in overflow qty
+                        const overflowQtyChanges = purchasedProduct.map( async (product) => {
+                            await OverflowStocksModel.findOne({productId: product.productId})
+                                    .then( async (overflowDoc) => {
+                                        await Product.findById(product.productId).then( async (existProduct) => {
+                                            overflowDoc.overflowQty = existProduct.vSoldQty - existProduct.qty;
+                                            console.log(overflowDoc.overflowQty);
+                                            if(overflowDoc.overflowQty < 0) {
+                                                overflowDoc.overflowQty = 0;
+                                            }
+                                            try {
+                                                await overflowDoc.save();
+                                            } catch (err) {
+                                                console.log(err);
+                                            }
+
+                                        })
+                                    })
+                        })
+                        await Promise.all(overflowQtyChanges);
 
                         // Create Purchase Invoice entry
                         const invoiceNumber = `INV/${new Date().toISOString().substring(0, 10).split('-').join('')}/${Math.floor(100000 + Math.random() * 900000)}`;

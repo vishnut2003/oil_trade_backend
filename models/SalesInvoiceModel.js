@@ -6,7 +6,7 @@ const salesInvoiceSchema = new Schema({
         type: String,
         required: true
     },
-    InvoiceDate: {
+    invoiceDate: {
         type: Date,
         required: true,
         default: Date.now
@@ -39,7 +39,7 @@ const salesInvoiceSchema = new Schema({
         type: String,
         required: true
     }
-})
+}, {timestamps: true})
 
 const SalesInvoiceModel = mongoose.model('SalesInvoice', salesInvoiceSchema);
 module.exports = SalesInvoiceModel;

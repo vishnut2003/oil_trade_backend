@@ -14,7 +14,7 @@ module.exports = {
         })
     },
     createOneProduct: (product) => {
-        return new Promise((resolve, reject) => {
+        return new Promise( async (resolve, reject) => {
             const today = new Date().toISOString().substring(0, 10)
             const time = new Date().toLocaleTimeString().split(' ').join('_')
             product.prevPrice = [
@@ -25,10 +25,18 @@ module.exports = {
                 }
             ]
             const newProduct = new Product(product);
+            let productId;
             try {
-                newProduct.save()
+                productId = await newProduct.save()
             } catch (err) {
                 reject(err)
+            }
+
+            const overflowStock = new OverflowStocksModel({ productId: productId._id, overflowQty: 0 })
+            try {
+                await overflowStock.save()
+            } catch (err) {
+                console.log(err);
             }
 
             resolve()

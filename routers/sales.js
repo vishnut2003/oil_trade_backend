@@ -92,4 +92,34 @@ router.post('/invoice/create', (req, res) => {
         })
 })
 
+router.get('/invoice/get-all', (req, res) => {
+    salesInvoiceHelpers.getAllInvoices()
+        .then((invoices) => {
+            res.status(200).send(invoices);
+        })
+        .catch((err) => {
+            res.status(500).send(err);
+        })
+})
+
+router.post('/invoice/get-one', (req, res) => {
+    salesInvoiceHelpers.getOneInvoice(req.body.invoiceId)
+        .then((invoice) => {
+            res.status(200).send(invoice);
+        })
+        .catch((err) => {
+            res.status(500).send(err);
+        })
+})
+
+router.post('/invoice/delete-one', (req, res) => {
+    salesInvoiceHelpers.deleteOneInvoice(req.body.invoiceId)
+        .then((invNo) => {
+            res.status(200).send(`Invoice No. ${invNo} is deleted!`);
+        })
+        .catch((err) => {
+            res.status(500).send(err);
+        })
+})
+
 module.exports = router;
