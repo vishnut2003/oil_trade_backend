@@ -17,7 +17,7 @@ module.exports = {
                 // check if qty is overflow
                 if (parseInt(product.qty) > existProduct.qty) {
                     rejection = true;
-                    return reject(`Order Quantity Error! - ${existProduct.name}`);
+                    return reject(`Order Quantity not Enough! - ${existProduct.name}`);
                 }
 
                 // Check if qty is invalid
@@ -30,6 +30,22 @@ module.exports = {
                 newInvoice.products[index].qty = parseInt(product.qty);
             })
             await Promise.all(checkQtyOverflow)
+
+            // check if qty is more that bargain qty
+            const existBargain = await BargainSalesModel.findOne({bargainNo: newInvoice.bargainNo})
+            const checkBargainProduct = existBargain.products.map((bargainProduct) => {
+                const checkInvoiceProduct = newInvoice.products.map((product) => {
+                    if(bargainProduct._id === product._id) {
+                        if(product.qty > bargainProduct.qty) {
+                            rejection = true;
+                            return reject('Order qty is not valid');
+                        }
+                    }
+                })
+                Promise.all(checkInvoiceProduct)
+            })
+            Promise.all(checkBargainProduct);
+
             if (rejection) return;
 
             // Minus qty from stock
@@ -82,7 +98,7 @@ module.exports = {
                     try {
                         await bargain.save()
                     } catch (err) {
-                        console.log(err);
+                        return console.log(err);
                     }
                 })
 
@@ -94,8 +110,10 @@ module.exports = {
             try {
                 await invoiceDoc.save();
             } catch (err) {
-                console.log(err);
+                return console.log(err);
             }
+
+            resolve();
         })
     },
     getAllInvoices: () => {

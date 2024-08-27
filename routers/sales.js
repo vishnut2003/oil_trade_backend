@@ -84,11 +84,12 @@ router.post('/bargain/delete-one', (req, res) => {
 
 router.post('/invoice/create', (req, res) => {
     salesInvoiceHelpers.createSalesInvoice(req.body)
-        .then((res) => {
-            console.log(res);
+        .then(() => {
+            res.status(200).send('Invoice created');
         })
         .catch((err) => {
             console.log(err);
+            res.status(400).send(err);
         })
 })
 
