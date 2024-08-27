@@ -20,7 +20,8 @@ const bargainSalesSchema = new Schema({
     },
     discount: {
         type: Number,
-        required: true
+        required: true,
+        default: 0
     },
     location: {
         type: Object,

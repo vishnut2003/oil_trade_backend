@@ -44,6 +44,9 @@ router.post('/location/delete-one', (req, res) => {
 })
 
 router.post('/bargain/create', (req, res) => {
+    if(!req.body.discount) {
+        req.body.discount = 0;
+    }
     bargainSalesHelpers.createBargainSales(req.body)
         .then((bargainNo) => {
             res.status(200).send(`Sales Bargain created with Bargain No. ${bargainNo}`);
