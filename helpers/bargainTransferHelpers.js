@@ -13,13 +13,16 @@ module.exports = {
             })
             await Promise.all(intConvert);
 
+            // get the prev products details
+            const prevBargain = await BargainPurchaseModel.findOne({bargainNo: transferDetails.bargainNo})
+
             // update the bargain
             const updatedBargain = {
                 bargainDate: new Date(),
                 products: transferDetails.products,
                 bargainNo: transferDetails.newBargainNo,
                 remarks: transferDetails.remarks,
-                oldBargain: transferDetails.prevBargain,
+                oldBargain: prevBargain,
             }
 
             BargainPurchaseModel.findOneAndUpdate({ bargainNo: transferDetails.bargainNo }, updatedBargain)

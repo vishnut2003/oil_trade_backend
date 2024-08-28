@@ -41,5 +41,16 @@ module.exports = {
                     reject(err);
                 })
         })
+    },
+    updateOneClient: (updatedClient) => {
+        return new Promise((resolve, reject) => {
+            ClientsModel.findByIdAndUpdate(updatedClient._id, updatedClient)
+                .then(() => {
+                    resolve('Client updated successfully...')
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+        })
     }
 }

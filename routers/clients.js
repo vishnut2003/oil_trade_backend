@@ -32,4 +32,18 @@ router.post('/delete-one', (req, res) => {
         })
 })
 
+router.post('/edit-one', (req, res) => {
+    clientsHelpers.updateOneClient(req.body)
+        .then((response) => {
+            res.status(200).send(response);
+        })
+        .catch((err) => {
+            res.status(500).send(err);
+        })
+})
+
+router.post('/history', (req, res) => {
+    console.log(req.body)
+})
+
 module.exports = router;
