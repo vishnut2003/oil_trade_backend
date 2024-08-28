@@ -13,9 +13,22 @@ module.exports = {
             })
             await Promise.all(intConvert);
 
-            console.log(transferDetails);
-
             // update the bargain
+            const updatedBargain = {
+                bargainDate: new Date(),
+                products: transferDetails.products,
+                bargainNo: transferDetails.newBargainNo,
+                remarks: transferDetails.remarks,
+                oldBargain: transferDetails.prevBargain,
+            }
+
+            BargainPurchaseModel.findOneAndUpdate({ bargainNo: transferDetails.bargainNo }, updatedBargain)
+                .then(() => {
+                    resolve('Bargain updated successfully.');
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
         })
     }
 }
