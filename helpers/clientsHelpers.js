@@ -1,5 +1,6 @@
 const BargainSalesModel = require("../models/BargainSalesModel");
 const ClientsModel = require("../models/clientsModel");
+const SalesInvoiceModel = require("../models/SalesInvoiceModel");
 
 module.exports = {
     createOneClient: (clientData) => {
@@ -59,6 +60,17 @@ module.exports = {
             BargainSalesModel.find({'client._id': clientId}, '_id bargainDate bargainNo seller status')
                 .then((histories) => {
                     resolve(histories);
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+        })
+    },
+    getAllInvoiceHistory: (clientId) => {
+        return new Promise((resolve, reject) => {
+            SalesInvoiceModel.find({'client._id': clientId}, '_id invoiceNo invoiceDate bargainNo seller')
+                .then((invoices) => {
+                    resolve(invoices);
                 })
                 .catch((err) => {
                     reject(err);

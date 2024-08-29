@@ -42,10 +42,20 @@ router.post('/edit-one', (req, res) => {
         })
 })
 
-router.post('/history', (req, res) => {
+router.post('/bargain-history', (req, res) => {
     clientsHelpers.getAllBargainHistory(req.body.clientId)
         .then((histories) => {
             res.status(200).send(histories);
+        })
+        .catch((err) => {
+            res.status(500).send(err);
+        })
+})
+
+router.post('/invoice-history', (req, res) => {
+    clientsHelpers.getAllInvoiceHistory(req.body.clientId)
+        .then((invoices) => {
+            res.status(200).send(invoices);
         })
         .catch((err) => {
             res.status(500).send(err);
