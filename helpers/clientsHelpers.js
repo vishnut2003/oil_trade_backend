@@ -1,3 +1,4 @@
+const BargainSalesModel = require("../models/BargainSalesModel");
 const ClientsModel = require("../models/clientsModel");
 
 module.exports = {
@@ -47,6 +48,17 @@ module.exports = {
             ClientsModel.findByIdAndUpdate(updatedClient._id, updatedClient)
                 .then(() => {
                     resolve('Client updated successfully...')
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+        })
+    },
+    getAllBargainHistory: (clientId) => {
+        return new Promise((resolve, reject) => {
+            BargainSalesModel.find({'client._id': clientId}, '_id bargainDate bargainNo seller status')
+                .then((histories) => {
+                    resolve(histories);
                 })
                 .catch((err) => {
                     reject(err);

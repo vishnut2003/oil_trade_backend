@@ -43,7 +43,13 @@ router.post('/edit-one', (req, res) => {
 })
 
 router.post('/history', (req, res) => {
-    console.log(req.body)
+    clientsHelpers.getAllBargainHistory(req.body.clientId)
+        .then((histories) => {
+            res.status(200).send(histories);
+        })
+        .catch((err) => {
+            res.status(500).send(err);
+        })
 })
 
 module.exports = router;
