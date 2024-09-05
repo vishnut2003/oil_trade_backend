@@ -107,7 +107,19 @@ module.exports = {
         })
     },
     deleteOnePurchase: (id) => {
-        return new Promise((resolve, reject) => {
+        return new Promise( async (resolve, reject) => {
+            // remove vStock from Products
+            await BargainPurchaseModel.findById(id)
+                .then( async (bargain) => {
+                    const updateAllProduct = bargain.products.map( async (product) => {
+                        await Product.findByIdAndUpdate(product._id, { $inc: { vQty: product.qty * -1 } })
+                    })
+                    await Promise.all(updateAllProduct);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+            
             BargainPurchaseModel.findByIdAndDelete(id)
                 .then((res) => {
                     resolve()
