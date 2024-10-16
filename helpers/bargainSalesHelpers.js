@@ -120,10 +120,22 @@ module.exports = {
         })
     },
     deleteOneBargain: (bargainId) => {
-        return new Promise((resolve, reject) => {
+        return new Promise( async (resolve, reject) => {
 
             // Miun from vSoldQty
-
+            const bargain = await BargainSalesModel.findById(bargainId);
+            const bargainProducts = bargain.products?.map( async (product) => {
+                const bargainProduct = await Product.findById(product._id);
+                bargainProduct.vSoldQty -= product.qty;
+                try {
+                    await bargainProduct.save();
+                } catch(err) {
+                    console.log(err);
+                }
+                return;
+            })
+            await Promise.all(bargainProducts);
+            
 
             // refresh overflow stock
 
