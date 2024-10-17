@@ -1,4 +1,5 @@
-const OverflowStocksModel = require("../models/overflowStocksModel")
+const OverflowStocksModel = require("../models/overflowStocksModel");
+const Product = require("../models/productsModel");
 
 module.exports = {
     addToOverQty: (stock, vSoldStock, productId) => {
@@ -28,6 +29,15 @@ module.exports = {
 
                     resolve();
                 })
+        })
+    },
+    getAllOverflowProductIds: () => {
+        return new Promise((resolve, reject) => {
+            OverflowStocksModel.find({}).then((overflowProducts) => {
+                const takeAllProducts = overflowProducts.map((overflowProduct) => {
+                    console.log(overflowProduct);
+                })
+            })
         })
     }
 }

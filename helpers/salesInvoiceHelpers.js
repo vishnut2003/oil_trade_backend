@@ -1,11 +1,13 @@
 const BargainSalesModel = require("../models/BargainSalesModel");
 const Product = require("../models/productsModel");
 const SalesInvoiceModel = require("../models/SalesInvoiceModel");
+const { addToOverQty } = require("./overflowStocksHelpers");
 
 module.exports = {
     createSalesInvoice: (newInvoice) => {
         return new Promise(async (resolve, reject) => {
             let rejection = false;
+            let productDeleted = false;
 
             // check if qty is valid
             const checkQtyOverflow = newInvoice.products.map(async (product, index) => {
@@ -13,6 +15,10 @@ module.exports = {
                 newInvoice.products[index].qty = parseInt(product.qty) || 0;
 
                 const existProduct = await Product.findById(product._id);
+                if(!existProduct || productDeleted) {
+                    productDeleted = true;
+                    return reject(`${product.name} is deleted!`);
+                }
 
                 // check if qty is overflow
                 if (parseInt(product.qty) > existProduct.qty) {
@@ -48,10 +54,19 @@ module.exports = {
 
             if (rejection) return;
 
-            // Minus qty from stock
+            // Exit if product is deleted with error
+            if (productDeleted) return;
+
+            // Minus qty from stock & Minus vSoldQty
             const minusQtyFromStock = newInvoice.products.map(async (product) => {
                 await Product.findById(product._id).then(async (existProduct) => {
+                    // Minus qty from stock
                     existProduct.qty -= product.qty;
+                    
+                    // Minus vSoldQty From Stock
+                    existProduct.vSoldQty -= product.qty;
+                    
+                    // Save the modified product
                     try {
                         await existProduct.save()
                     } catch (err) {
@@ -60,6 +75,14 @@ module.exports = {
                 })
             })
             await Promise.all(minusQtyFromStock);
+
+            // Refresh overflow qty of product
+            const refreshOverflowQty = newInvoice.products?.map( async (product) => {
+                const existProduct = await Product.findById(product._id);
+                await addToOverQty(existProduct.qty, existProduct.vSoldQty, product._id);
+                return;
+            })
+            await Promise.all(refreshOverflowQty);
 
             // minus qty from bargain
             await BargainSalesModel.findOne({ bargainNo: newInvoice.bargainNo })

@@ -121,11 +121,15 @@ module.exports = {
     },
     deleteOneBargain: (bargainId) => {
         return new Promise( async (resolve, reject) => {
+            const bargain = await BargainSalesModel.findById(bargainId);
 
             // Miun from vSoldQty
-            const bargain = await BargainSalesModel.findById(bargainId);
             const bargainProducts = bargain.products?.map( async (product) => {
                 const bargainProduct = await Product.findById(product._id);
+
+                // Return if product is deleted
+                if(!bargainProduct) return;
+
                 bargainProduct.vSoldQty -= product.qty;
                 try {
                     await bargainProduct.save();
@@ -135,10 +139,17 @@ module.exports = {
                 return;
             })
             await Promise.all(bargainProducts);
-            
 
             // refresh overflow stock
+            const refreshOverflowQty = bargain.products?.map( async (bargainProduct) => {
+                const product = await Product.findById(bargainProduct._id);
+                if (!product) return;
+                await overflowStocksHelpers.addToOverQty(product.qty, product.vSoldQty, bargainProduct._id);
+                return;
+            })
+            await Promise.all(refreshOverflowQty);
 
+            // Delete the bargain
             BargainSalesModel.findByIdAndDelete(bargainId)
                 .then(() => {
                     resolve();
